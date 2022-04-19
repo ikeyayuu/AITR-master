@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -73,6 +73,7 @@ namespace AITR.respondent
 
                     if (int.Parse((string)question["QID"]) == Convert.ToInt32(Session["question_nb"]))
                     {
+                        questionOptions = Convert.ToInt32(question["QTID"]);
                         havePreviousQuestion = question["prevQID"].ToString();
                         haveNextQuestion = question["nextQID"].ToString();
                         question_title.Text = question["title"].ToString();
@@ -94,9 +95,10 @@ namespace AITR.respondent
                             question_option.Text = "Type your answer";
                         }
 
-                        questionOptions = Convert.ToInt32(question["QTID"]);
+                        
                         if (questionOptions == 1)
-                        {                            
+                        {
+                            
                             Option.Controls.Add(textBox);
                             textBox.Text = String.Empty;
                         }
@@ -151,7 +153,7 @@ namespace AITR.respondent
                 Q_OptionReader = Q_OptionCommand.ExecuteReader();
                 // Database table for Question Option
                 DataTable Q_OptionDB = new DataTable();
-                Q_OptionDB.Columns.Add("id", System.Type.GetType("System.String"));
+                Q_OptionDB.Columns.Add("MAID", System.Type.GetType("System.String"));
                 Q_OptionDB.Columns.Add("title", System.Type.GetType("System.String"));
                 Q_OptionDB.Columns.Add("subQuestion", System.Type.GetType("System.Boolean"));
                 Q_OptionDB.Columns.Add("subQID", System.Type.GetType("System.String"));
@@ -159,20 +161,20 @@ namespace AITR.respondent
                 while (Q_OptionReader.Read())
                 {
                     Q_OptionRow = Q_OptionDB.NewRow();
-                    Q_OptionRow["id"] = Q_OptionReader["multiple_answer_id"].ToString();
+                    Q_OptionRow["MAID"] = Q_OptionReader["MAID"].ToString();
                     Q_OptionRow["title"] = Q_OptionReader["title"].ToString();
                     Q_OptionRow["subQuestion"] = Convert.ToBoolean(Q_OptionReader["subQuestion"]);
                     Q_OptionRow["subQID"] = Q_OptionReader["subQID"].ToString();
                     Q_OptionDB.Rows.Add(Q_OptionRow);
                     dbSubQuestion.DataSource = Q_OptionDB;
-                    dbSubQuestion.DataBind();
-                    Console.WriteLine(questionOptions);
-
+                    dbSubQuestion.DataBind();                    
+                    
                      if (questionOptions == 2)
                     {
+                        
                         ListItem item = new ListItem();
                         item.Text = Q_OptionRow["title"].ToString();
-                        item.Value = Q_OptionRow["id"].ToString();
+                        item.Value = Q_OptionRow["MAID"].ToString();
 
                         radioBtnList.Items.Add(item);
                         Option.Controls.Add(radioBtnList);
@@ -181,7 +183,7 @@ namespace AITR.respondent
                     {
                         ListItem item = new ListItem();
                         item.Text = Q_OptionRow["title"].ToString();
-                        item.Value = Q_OptionRow["id"].ToString();
+                        item.Value = Q_OptionRow["MAID"].ToString();
 
                         checkBoxList.Items.Add(item);
                         Option.Controls.Add(checkBoxList);
@@ -192,7 +194,7 @@ namespace AITR.respondent
 
                         ListItem item = new ListItem();
                         item.Text = Q_OptionRow["title"].ToString();
-                        item.Value = Q_OptionRow["id"].ToString();
+                        item.Value = Q_OptionRow["MAID"].ToString();
                         
                         dropDownList.Items.Add(item);
                         Option.Controls.Add(dropDownList);
@@ -306,7 +308,7 @@ namespace AITR.respondent
 
             using (SqlConnection conn = Utils.Utils.GetConnection())
             {
-                String query = "INSERT INTO research_answer (research_id, question_id, answer) VALUES (@research_id, @question_id, @answer)";
+                String query = "INSERT INTO Answer (SID, QID, answer) VALUES (@SID, @QID, @answer)";
 
                 conn.Open();
 
